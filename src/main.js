@@ -9,7 +9,6 @@ function setCardType(type) {
   const colors = {
     'visa': ['#315881', '#DFA43B'],
     'mastercard': ['#F79E1B', '#FF3737'],
-    'american-express': ['#98A99F', '#0E1B14'],
     'elo': ['#FFF20080', '#00A4E080'],
     'default': ['black', 'grey'],
   }
@@ -59,11 +58,6 @@ const cardNumberPattern = {
       cardtype: 'mastercard',
     },
     {
-      mask: '0000 000000 00000',
-      regex: /(^34\d{0,15}|^37\d{0,15})/,
-      cardtype: 'american-express',
-    },
-    {
       mask: '0000 0000 0000 0000',
       regex: /^6\d{0,15}/,
       cardtype: 'elo',
@@ -73,7 +67,7 @@ const cardNumberPattern = {
       cardtype: 'default',
     },
   ],
-  dispatch: function (appended, dynamicMasked) {
+  dispatch: function(appended, dynamicMasked) {
     const number = (dynamicMasked.value + appended).replace(/\D/g, '')
     const foundMask = dynamicMasked.compiledMasks.find(function (item) {
       return number.match(item.regex)
@@ -96,3 +90,33 @@ cardHolder.addEventListener('input', () => {
 
   ccHolder.innerHTML = cardHolder.value.length === 0 ? 'FULANO DA SILVA' : cardHolder.value
 })
+
+securityCodeMasked.on('accept', () => {
+updateSecurityCode(securityCodeMasked.value)
+})
+
+function updateSecurityCode(code) {
+  const ccSecurity = document.querySelector('.cc-security .value')
+
+  ccSecurity.innerHTML = code.length === 0 ? '123' : code
+}
+
+cardNumberMasked.on('accept', () => {
+  const cardType = cardNumberMasked.masked.currentMask.cardtype
+  setCardType(cardType)
+  updateCardNumber(cardNumberMasked.value)
+})
+
+function updateCardNumber(number) {
+  const ccNumber = document.querySelector('.cc-number')
+  ccNumber.innerHTML = number.length === 0 ? '1234 5678 9012 3456' : number
+}
+
+expirationDateMasked.on('accept', () => {
+updateExpirationDate(expirationDateMasked.value)
+})
+
+function updateExpirationDate(date) {
+  const ccExpirationDate = document.querySelector('.cc-extra .value')
+  ccExpirationDate.innerHTML = date.length === 0 ? '02/32' : date
+}
